@@ -8,11 +8,26 @@ public class Server {
     private static final int PORT = 12345;
     public static HashSet<ClientHandler> clients = new HashSet<>();
     private static Set<String> clientNames = new HashSet<>();
-    private static List<String> words = Arrays.asList("java", "socket", "programming", "hangman", "computer");
+    static String filePath = "C:\\Users\\Home\\IdeaProjects\\ORIS-semwork-sokets\\Hangman\\src\\main\\java\\ru\\kpfu\\hangman\\words.txt"; // Путь к вашему текстовому файлу
+    static List<String> words = readLinesFromFile(filePath);
     private static String wordToGuess = getRandomWord();
     private static StringBuilder currentGuess = new StringBuilder("_".repeat(wordToGuess.length()));
 
     private static Map<String, String> clientColors = new HashMap<>();
+
+
+    private static List<String> readLinesFromFile(String filePath) {
+        List<String> lines = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                lines.add(line.trim());
+            }
+        } catch (IOException e) {
+            System.err.println("Ошибка при чтении файла: " + e.getMessage());
+        }
+        return lines;
+    }
 
     public static synchronized String getClientColor(String username) {
         return clientColors.getOrDefault(username, "black");
@@ -43,11 +58,6 @@ public class Server {
         return true;
     }
 
-    public static synchronized void removeClient(ClientHandler client) {
-        clients.remove(client);
-        clientNames.remove(client.getUsername());
-        broadcast("Server: " + client.getUsername() + " покинул игру.");
-    }
 
     public static synchronized void broadcast(String message) {
         for (ClientHandler client : clients) {
@@ -68,6 +78,7 @@ public class Server {
         }
         return found;
     }
+
 
     public static synchronized String getCurrentGuess() {
         return currentGuess.toString();

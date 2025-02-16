@@ -1,8 +1,16 @@
 package ru.kpfu.hangman;
 
 
+import javafx.animation.FadeTransition;
+import javafx.animation.ParallelTransition;
+import javafx.animation.TranslateTransition;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
+
 import java.io.*;
 import java.net.Socket;
+import java.util.Random;
 
 public class ClientHandler extends Thread {
     private Socket socket;
@@ -25,10 +33,15 @@ public class ClientHandler extends Thread {
             while (true) {
                 out.println("Введите ваше имя: ");
                 username = in.readLine();
-                if (username == null || username.isEmpty() || !Server.addClientName(username)) {
-                    out.println("Это имя уже занято. Попробуйте другое.");
+                if (username == null || username.isEmpty()) {
+                    out.println("❗ Имя не может быть пустым. Введите другое имя.");
+                    continue;
+                }
+
+                if (Server.addClientName(username)) {
+                    break; // Имя уникально, выходим из цикла
                 } else {
-                    break;
+                    out. println("❗ Это имя уже занято. Попробуйте другое.");
                 }
             }
 
@@ -91,4 +104,6 @@ public class ClientHandler extends Thread {
     public String getUsername() {
         return this.username;
     }
+
+
 }
